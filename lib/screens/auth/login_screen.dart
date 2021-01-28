@@ -25,9 +25,6 @@ class _LoginViewState extends State<LoginView> {
       print(e);
     }
     if (!mounted) return;
-    setState(() {
-      _canCheckBiometrics = canCheckBiometrics;
-    });
   }
 
   Future<void> _getAvailableBiometrics() async {
@@ -38,41 +35,22 @@ class _LoginViewState extends State<LoginView> {
       print(e);
     }
     if (!mounted) return;
-    setState(() {
-      _availableBiometrics = availableBiometrics;
-    });
   }
 
   Future<void> _authenticate() async {
     bool authenticated = false;
     try {
-
-      setState(() {
-        _isAuthenticating = true;
-        _authorized = 'Authenticating';
-      });
-
       authenticated = await auth.authenticateWithBiometrics(
-          localizedReason: 'Scan your fingerprint to authenticate',
-          useErrorDialogs: true,
+          localizedReason: 'Scan your fingerprint to authenticate to Coibot',
+          useErrorDialogs: false,
           stickyAuth: true);
-
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = 'Authenticating';
-      });
-
     } on PlatformException catch (e) {
       print(e);
     }
-
     if (!mounted) return;
 
-    final String message = authenticated ? 'Authorized' : 'Not Authorized';
-    setState(() {
-      _authorized = message;
-    });
-    authenticated ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomeView())) : print("Not Authorized");
+    //Burada eğer cancel a basılırsa kullanıcı kendisi kullanıcı adı ve şifre ile giriş yapabilir.
+    authenticated ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomeView())) : print("Error");
   }
 
   void _cancelAuthentication() {
@@ -91,17 +69,7 @@ class _LoginViewState extends State<LoginView> {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    Text('Can check biometrics: $_canCheckBiometrics\n'),
-                    RaisedButton(
-                      child: const Text('Check biometrics'),
-                      onPressed: _checkBiometrics,
-                    ),
-                    Text('Available biometrics: $_availableBiometrics\n'),
-                    RaisedButton(
-                      child: const Text('Get available biometrics'),
-                      onPressed: _getAvailableBiometrics,
-                    ),
-                    Text('Current State: $_authorized\n'),
+
                     RaisedButton(
                       child: Text(_isAuthenticating ? 'Cancel' : 'Authenticate'),
                       onPressed:
