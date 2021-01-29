@@ -12,6 +12,7 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final LocalAuthentication auth = LocalAuthentication();
+
   bool _canCheckBiometrics;
   List<BiometricType> _availableBiometrics;
   String _authorized = 'Not Authorized';
@@ -31,6 +32,8 @@ class _LoginViewState extends State<LoginView> {
     List<BiometricType> availableBiometrics;
     try {
       availableBiometrics = await auth.getAvailableBiometrics();
+      if(availableBiometrics.length > 0) {
+      }
     } on PlatformException catch (e) {
       print(e);
     }
@@ -42,7 +45,7 @@ class _LoginViewState extends State<LoginView> {
     try {
       authenticated = await auth.authenticateWithBiometrics(
           localizedReason: 'Scan your fingerprint to authenticate to Coibot',
-          useErrorDialogs: false,
+          useErrorDialogs: true,
           stickyAuth: true);
     } on PlatformException catch (e) {
       print(e);
@@ -50,7 +53,10 @@ class _LoginViewState extends State<LoginView> {
     if (!mounted) return;
 
     //Burada eğer cancel a basılırsa kullanıcı kendisi kullanıcı adı ve şifre ile giriş yapabilir.
-    authenticated ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomeView())) : print("Error");
+    authenticated
+        ? Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => HomeView()))
+        : print("Error");
   }
 
   void _cancelAuthentication() {
@@ -58,24 +64,31 @@ class _LoginViewState extends State<LoginView> {
   }
 
   @override
+  void initState() {
+    _checkBiometrics();
+    _getAvailableBiometrics();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-          appBar: AppBar(
-            title: const Text('Plugin example app'),
-          ),
-          body: ConstrainedBox(
-              constraints: const BoxConstraints.expand(),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-
-                    RaisedButton(
-                      child: Text(_isAuthenticating ? 'Cancel' : 'Authenticate'),
-                      onPressed:
-                      _isAuthenticating ? _cancelAuthentication : _authenticate,
-                    )
-                  ])),
-        ));
+      appBar: AppBar(
+        title: const Text('Biometric Login Sample'),
+      ),
+      body: ConstrainedBox(
+          constraints: const BoxConstraints.expand(),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom : 75.0),
+                  child: GestureDetector(child: Icon(Icons.fingerprint, size: 50,),onTap: (){
+                    _authenticate();
+                  },),
+                ),
+              ])),
+    ));
   }
 }
