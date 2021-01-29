@@ -13,6 +13,9 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final LocalAuthentication auth = LocalAuthentication();
 
+  //Önce biometric giriş destekleyip desteklemediğine bakılır, sonra varsa hangilerinin desteklediği liste halinde alınır.
+  //En sonunda bu işlemlerden sırasıyla faceId-fingerprint denenir, başarılı ise giriş yapılır
+
   bool _canCheckBiometrics;
   List<BiometricType> _availableBiometrics;
   String _authorized = 'Not Authorized';
@@ -22,6 +25,9 @@ class _LoginViewState extends State<LoginView> {
     bool canCheckBiometrics;
     try {
       canCheckBiometrics = await auth.canCheckBiometrics;
+      setState(() {
+        _canCheckBiometrics = canCheckBiometrics;
+      });
     } on PlatformException catch (e) {
       print(e);
     }
@@ -32,8 +38,7 @@ class _LoginViewState extends State<LoginView> {
     List<BiometricType> availableBiometrics;
     try {
       availableBiometrics = await auth.getAvailableBiometrics();
-      if(availableBiometrics.length > 0) {
-      }
+      if (availableBiometrics.length > 0) {}
     } on PlatformException catch (e) {
       print(e);
     }
@@ -67,6 +72,7 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
     _checkBiometrics();
     _getAvailableBiometrics();
+    _authenticate();
     super.initState();
   }
 
@@ -83,10 +89,16 @@ class _LoginViewState extends State<LoginView> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(bottom : 75.0),
-                  child: GestureDetector(child: Icon(Icons.fingerprint, size: 50,),onTap: (){
-                    _authenticate();
-                  },),
+                  padding: const EdgeInsets.only(bottom: 75.0),
+                  child: GestureDetector(
+                    child: Icon(
+                      Icons.fingerprint,
+                      size: 50,
+                    ),
+                    onTap: () {
+
+                    },
+                  ),
                 ),
               ])),
     ));
