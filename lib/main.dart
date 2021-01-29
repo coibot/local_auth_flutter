@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:local_auth_flutter/screens/auth/login_screen.dart';
+
 import 'package:local_auth_flutter/screens/auth/splash_service_screen.dart';
 import 'package:local_auth_flutter/services/shared_preferences_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SharedPreferencesService.init();
+  SharedPreferences.setMockInitialValues({});
+  await SharedPreferencesServices.prefrencesInit();
   runApp(MyApp());
 }
 class MyApp extends StatelessWidget {

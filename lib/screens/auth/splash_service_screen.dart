@@ -16,16 +16,20 @@ class _SplashServiceViewState extends State<SplashServiceView> {
   @override
   void initState() {
     super.initState();
-    getToken();
+    new Future.delayed(const Duration(seconds: 3), () {
+      getToken();
+    });
+
   }
 
   void getToken() {
     //gerekli servisler cağırılır tokenlar kontrol edilir.
-
     //_token boşsa login sayfasına, değilse ama tokenlar eşleşmiyorsa login sayfasına.
     //_token boş değil ve eşleşiyorsa home sayfasına gider.
+    //deneme token ı
+    SharedPreferencesServices.instance.setStringValue("AUTHTOKEN", "ok");
 
-    String _token = SharedPreferencesService.getString("AUTHTOKEN") ?? "";
+    String _token = SharedPreferencesServices.instance.getStringValue("AUTHTOKEN") ?? "";
 
     if(_token.isEmpty || _token != AUTH_TOKEN){
       SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -43,28 +47,36 @@ class _SplashServiceViewState extends State<SplashServiceView> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xff2F333C),
-      child: Center(
-        child: Stack(
-          children: [
-            SpinKitDualRing(
-              color: Color(0xff44A4D1),
-              size: 125.0,
+      color: Color(0xff20232B),
+      child: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: Stack(
+                children: [
+                  SpinKitDualRing(
+                    color: Color(0xff44A4D1),
+                    size: 150.0,
+                    lineWidth: 5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top : 0.0),
+                    child: Center(
+                      child: Image.asset(
+                        "assets/ikon-1.png",
+                        width: 85,
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-            Center(
-              child: PhysicalModel(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(100),
-                  shadowColor: Color(0xff44A4D1),
-                  shape: BoxShape.circle,
-                  elevation: 5,
-                  child: Image.asset(
-                    "assets/logo.png",
-                    width: 65,
-                  )),
-            )
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 50.0),
+            child: Image.asset("assets/ikon-2.png", width: 145,),
+          )
+        ],
       ),
     );
   }
